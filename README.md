@@ -32,6 +32,8 @@
 
 ![](https://github.com/Ich-liebe-dich/images/blob/master/QQ%E6%88%AA%E5%9B%BE20190821150315.png)
 
-
+<span style="color:red">**</span>
+有部分功能尚未实装
+<span style="color:red">**</span>
 
 
