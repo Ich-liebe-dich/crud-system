@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.test.mapper.CourseMapper">
+     
+     <resultMap type="course" id="courseMap">
+     	 <id property="id" column="id"/>
+		 <result property="name" column="name"/>
+		 <result property="hour" column="hour"/>
+		 <result property="credit" column="credit"/>
+		 <result property="desc" column="desc"/>
+		 <result property="capacity" column="capacity"/>
+	     <result property="remark" column="remark"/>
+	     <association property="teacher" select="org.test.mapper.TeacherMapper.queryTeacherById" column="teacher_id"
+            javaType="teacher">
+            <result property="name" column="name" />
+            <result property="sex" column="sex" />
+        </association>
+     </resultMap>
+
+     <select id="queryCourseById" parameterType="int" resultMap="courseMap">
+     	SELECT * FROM t_course WHERE id = #{id}
+     </select>
+		
+     <select id="selectCourseByStuId" parameterType="int"
+        resultType="course">
+        SELECT * FROM t_course WHERE id IN (
+        SELECT course_id FROM t_item WHERE stu_id = #{id}
+        )
+     </select>
+     
+     <select id="selectCourseByTeacherId" parameterType="int"
+        resultType="course">
+        SELECT * FROM t_course WHERE teacher_id = #{id}
+     </select>
+     
+     <select id="queryCourseList" resultMap="courseMap">
+     	SELECT * from t_course
+     </select>
+     
+     <select id="queryCourseListByPage" resultMap="courseMap" parameterType="pageModel">
+     	SELECT * from t_course limit #{firstLimitParam},#{pageSize}
+     </select>
+     
+     <select id="queryCourse" resultMap="courseMap">
+     	SELECT * FROM t_course
+     	<where>
+     		<if test="id != null">
+     		    AND id = #{id}
+     		</if>
+     		<if test="name != null and name != ''">
+     			AND name = #{name}
+     		</if>
+     		<if test="hour != null">
+     			AND hour = #{hour}
+     		</if>
+     		<if test="desc != null and desc != ''">
+     			AND desc = #{desc}
+     		</if>
+     		<if test="hour != null">
+     			AND hour = #{hour}
+     		</if>
+     	</where>
+     </select>
+     
+     <select id="queryCourseByPage" resultMap="courseMap" parameterType="hashmap">
+     	SELECT * FROM t_course
+     	<where>
+     		<if test="course.id != null">
+     		    AND id = #{course.id}
+     		</if>
+     		<if test="course.name != null and course.name != ''">
+     			AND name = #{course.name}
+     		</if>
+     		<if test="course.hour != null">
+     			AND hour = #{course.hour}
+     		</if>
+     		<if test="course.desc != null and course.desc != ''">
+     			AND desc = #{course.desc}
+     		</if>
+     		<if test="course.hour != null">
+     			AND hour = #{course.hour}
+     		</if>
+     	</where>
+     	LIMIT #{page.firstLimitParam},#{page.pageSize}
+     </select>
+     
+     
+     <select id="selectCourseById" resultMap="courseMap" parameterType="int">
+     	SELECT * from t_course WHERE id=#{id}
+     </select>
+     
+     <!-- 第一个参数：学号
+                  第二个参数：课程号 
+          使用时注意key值要匹配,注意监测学号与课程号的合法性
+      -->
+      <!-- 为学生添加课程 -->
+     <insert id="addCourseById" parameterType="hashmap">
+     	INSERT INTO t_item set t_item.stu_id = #{stuId},t_item.course_id=#{courseId}
+     </insert>
+     
+     <!-- 为教师分配课程 -->
+     <update id="addCourseForTeacher" parameterType="hashmap" >
+        UPDATE t_course SET teacher_id = #{teacherId} WHERE id=#{courseId}
+        <!--  NSERT INTO t_course set t_course.teacher_id=#{teacherId} where id=#{courseId}-->
+     </update>
+     
+     
+     <!-- 添加课程信息 -->
+     <insert id="addCourse" parameterType="course" >
+        insert into t_course set id = #{id},name=#{name},hour=#{hour},credit=#{credit},remark=#{remark},capacity=#{capacity},t_course.desc=#{desc}
+     </insert>
+     
+     <!-- 更新课程信息 -->
+     <update id="updateCourse" parameterType="course">
+         UPDATE t_course
+         SET
+         name=#{name},hour=#{hour},credit=#{credit},remark=#{remark},capacity=#{capacity},`desc`=#{desc} where id=#{id}
+     </update>
+     
+     <!-- 查询课程总数目 -->
+     <select id="getCourseNum" resultType="int">
+         SELECT COUNT(*) FROM t_course
+     </select>
+     
+     <delete id="deleteCourseById" parameterType="int" >
+         DELETE FROM t_course WHERE id = #{id}
+     </delete>
+</mapper>

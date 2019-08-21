@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.test.mapper.TeacherMapper">
+    <resultMap type="teacher"
+        id="teacherResultMap">
+        <id property="id" column="id" />
+        <result property="name" column="name" />
+        <result property="sex" column="sex" />
+        <result property="identity" column="identity"/>
+        <!-- 一对多关联映射:collection -->
+        <collection property="courseList" javaType="List"
+            column="id" ofType="course"
+            select="org.test.mapper.CourseMapper.selectCourseByTeacherId"
+            fetchType="lazy">
+            <id property="id" column="id" />
+		    <result property="name" column="name"/>
+		    <result property="hour" column="hour"/>
+		    <result property="credit" column="credit"/>
+		    <result property="desc" column="desc"/>
+		    <result property="capacity" column="capacity"/>
+	    	<result property="remark" column="remark"/>
+        </collection>
+    </resultMap>
+    
+    <!-- 根据不同条件查询 -->
+    <select id="queryTeacher" parameterType="teacher" resultMap="teacherResultMap">
+        SELECT * FROM t_teacher
+        <where>
+            <if test="id != null and id != -1">
+            AND id = #{id}
+            </if>
+            <if test="name != null and name !=''">
+            AND name = #{name}
+            </if>
+            <if test="password != null and password !=''">
+	    	AND password = #{password}
+	    	</if>
+            <if test="sex != null and sex !=''">
+            AND sex = #{sex}
+            </if>
+        </where>
+    </select>
+    
+    <select id="queryTeacherByPage" parameterType="hashmap" resultMap="teacherResultMap">
+        SELECT * FROM t_teacher
+        <where>
+            <if test="teacher.id != null and teacher.id != -1">
+            AND id = #{teacher.id}
+            </if>
+            <if test="teacher.name != null and teacher.name !=''">
+            AND name = #{teacher.name}
+            </if>
+            <if test="teacher.password != null and teacher.password !=''">
+	    	AND password = #{teacher.password}
+	    	</if>
+            <if test="teacher.sex != null and teacher.sex !=''">
+            AND sex = #{teacher.sex}
+            </if>
+        </where>
+         LIMIT #{page.firstLimitParam},#{page.pageSize}
+    </select>
+    
+  
+    
+    <select id="queryTeacherById" parameterType="int" resultMap="teacherResultMap">
+        SELECT * FROM t_teacher where id=#{id}
+    </select>
+    
+    <select id="queryTeacherList" resultMap="teacherResultMap">
+    	SELECT * FROM t_teacher
+    </select>
+    
+    <select id="queryTeacherListByPage" parameterType="pageModel" resultMap="teacherResultMap">
+    	SELECT * FROM t_teacher limit #{firstLimitParam},#{pageSize}
+    </select>
+    
+    <select id="count" parameterType="teacher" resultType="int">
+		SELECT COUNT(*) FROM t_teacher
+		<where>
+			<if test="id != null and id != -1">
+	        AND id = #{id}
+            </if>
+            <if test="name != null and name !=''">
+            AND name = #{name}
+            </if>
+            <if test="password != null and password !=''">
+	    	AND password = #{password}
+	    	</if>
+            <if test="sex != null and sex !=''">
+            AND sex = #{sex}
+            </if>
+		</where>
+	</select>
+    
+    <!-- 添加教师信息 -->
+    <insert id="addTeacher" parameterType="teacher">
+        INSERT INTO t_teacher(id,name,password,sex) VALUES(#{id},#{name},#{password},#{sex})
+    </insert>
+    
+    <!-- 删除添加教师信息 -->
+    <delete id="deleteTeacher" parameterType="int" >
+    	DELETE FROM t_teacher WHERE id = #{id}
+    </delete>
+    
+    <!-- 修改添加教师信息 -->
+    <update id="updateTeacher" parameterType="teacher" >
+    	UPDATE t_teacher set name = #{name},sex = #{sex} WHERE id=#{id}
+    </update>
+    
+    <delete id="deleteTeacherById" parameterType="int" >
+         DELETE FROM t_teacher WHERE id = #{id}
+     </delete>
+    
+</mapper>	

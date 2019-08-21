@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.test.mapper.AdminMapper">
+    
+    <!-- 根据不同条件查询 -->
+    <select id="queryAdmin" parameterType="admin" resultType="admin">
+        SELECT * FROM t_admin
+        <where>
+            <if test="id != null and id != -1">
+            AND id = #{id}
+            </if>
+            <if test="name != null and name !=''">
+            AND name = #{name}
+            </if>
+            <if test="password != null and password !=''">
+	    	AND password = #{password}
+	    	</if>
+            <if test="sex != null and sex !=''">
+            AND sex = #{sex}
+            </if>
+            <if test="age != null and age != -1">
+            AND age = #{age}
+            </if>
+        </where>
+    </select>
+    
+    <!-- 根据id查询admin -->
+    <select id="queryAdminById" parameterType="int"  resultType="admin">
+        SELECT * FROM t_adminr where id=#{id}
+    </select>
+    
+    <!-- 获取admin列表 -->
+    <select id="queryAdminList"  resultType="admin">
+    	SELECT * FROM t_admin
+    </select>
+    
+    <!-- 添加教师信息 -->
+    <insert id="addAdmin" parameterType="admin">
+        INSERT INTO t_admin VALUES(#{id},#{name},#{password},#{sex},#{age})
+    </insert>
+    
+    <!-- 删除添加教师信息 -->
+    <delete id="deleteAdmin" parameterType="int" >
+    	DELETE FROM t_admin WHERE id = #{id}
+    </delete>
+    
+    <!-- 修改添加教师信息 -->
+    <update id="updateAdmin" parameterType="admin" >
+    	UPDATE t_admin set name = #{name},password=#{password},sex = #{sex},age=#{age} WHERE id=#{id}
+    </update>
+    
+</mapper>	

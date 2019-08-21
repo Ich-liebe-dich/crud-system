@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.test.mapper.StudentMapper">	
+	
+	<resultMap type="student" id="studentResultMap">
+		<id property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="password" column="password"/>
+		<result property="sex" column="sex" javaType="STRING"/>
+		<result property="age" column="age"/>
+		<result property="identity" column="identity"/>
+		<collection property="courses" ofType="course"  
+		            column="id" fetchType="lazy" 
+		            javaType="List" 
+		            select="org.test.mapper.CourseMapper.selectCourseByStuId" >
+		    <id property="id" column="id"/>
+		    <result property="name" column="name"/>
+		    <result property="hour" column="hour"/>
+		    <result property="credit" column="credit"/>
+		    <result property="desc" column="desc"/>
+		    <result property="capacity" column="capacity"/>
+	    	<result property="remark" column="remark"/>
+		</collection>
+	</resultMap>
+	
+	<!-- 为学生添加基础信息 -->
+	<insert  id="addStudent" parameterType="student">
+	    insert into t_stu set id=#{id},name=#{name},password=#{password},sex=#{sex},age=#{age}
+	</insert>
+	
+	<!-- 更改学生基础信息 -->
+	<update id="updateStudent" parameterType="student">
+	    UPDATE t_stu set name=#{name},sex=#{sex},age=#{age}
+        WHERE id = #{id}
+	</update>
+	
+	<!-- 删除学生 -->
+	<delete id="deleteStudent" parameterType="int">
+	    DELETE FROM t_stu where id = #{id}；
+	</delete>
+	
+	<!-- 获取学生列表 -->
+	<select id="queryStudentList" resultMap="studentResultMap">
+		select * from t_stu
+	</select>
+	
+	<select id="queryStudentListByPage" resultMap="studentResultMap" parameterType="pageModel">
+		select * from t_stu limit #{firstLimitParam},#{pageSize}
+	</select>
+		
+	<select id="count" parameterType="student" resultType="int">
+		SELECT COUNT(*) FROM t_stu
+		<where>
+			<if test="id != null and id != -1">
+	    	AND id = #{id}
+	    	</if>
+	    	<if test="name !=null and name != ''">
+	    	AND name = #{name}
+	    	</if>
+	    	<if test="password != null and password !=''">
+	    	AND password = #{password}
+	    	</if>
+	    	<if test="sex != null and sex !=''">
+	    	AND sex = #{sex}
+	    	</if>
+	    	<if test="age != null and age != 0">
+	    	AND age = #{age}
+	    	</if>
+		</where>
+	</select>
+	
+	<!-- 根据id查询学生 -->
+	<select id="queryStudentById" parameterType="int" resultMap="studentResultMap">
+		select * from t_stu where id = #{id}
+	</select>
+	
+	<select id="queryStudent" parameterType="student" resultType="student" >
+	    SELECT * FROM t_stu
+	    <where>
+	    	<if test="id != null and id != -1">
+	    	AND id = #{id}
+	    	</if>
+	    	<if test="name !=null and name != ''">
+	    	AND name = #{name}
+	    	</if>
+	    	<if test="password != null and password !=''">
+	    	AND password = #{password}
+	    	</if>
+	    	<if test="sex != null and sex !=''">
+	    	AND sex = #{sex}
+	    	</if>
+	    	<if test="age != null and age != 0">
+	    	AND age = #{age}
+	    	</if>
+	    </where>
+	</select>
+	
+	<select id="queryStudentByPage" resultMap="studentResultMap" parameterType="hashmap">
+	    SELECT * FROM t_stu
+	    <where>
+	    	<if test="stu.id != null and stu.id != -1">
+	    	AND id = #{stu.id}
+	    	</if>
+	    	<if test="stu.name !=null and stu.name != ''">
+	    	AND name = #{stu.name}
+	    	</if>
+	    	<if test="stu.password != null and stu.password !=''">
+	    	AND password = #{stu.password}
+	    	</if>
+	    	<if test="stu.sex != null and stu.sex !=''">
+	    	AND sex = #{stu.sex}
+	    	</if>
+	    	<if test="stu.age != null and stu.age != 0">
+	    	AND age = #{stu.age}
+	    	</if>
+	    </where>
+	    LIMIT #{page.firstLimitParam},#{page.pageSize}
+	</select>
+	
+	<delete id="deleteStuById" parameterType="int" >
+         DELETE FROM t_stu WHERE id = #{id}
+     </delete>
+</mapper>

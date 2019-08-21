@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
+	
+	<!-- Spring+MyBatis配置 -->
+	
+	<!-- 扫描包，将含有Controller、Service、Component、Repository等注解的类纳入容器 -->
+	<context:component-scan base-package="org.test"/>
+	
+	<!-- MyBatis:数据源、属性文件、SqlSessionFactory -->
+	
+	<!-- 加载db.properties -->
+	<bean id="config" class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
+		<property name="locations">
+			<array>
+				<value>classpath:db.properties</value>
+			</array>
+		</property>
+	</bean>
+	
+	<!-- 数据源 -->
+	<bean class="org.apache.commons.dbcp.BasicDataSource" id="dataSource">
+		<property name="driverClassName" value="${driver}"></property>
+		<property name="url" value="${url}"></property>
+		<property name="username" value="${username}"></property>
+		<property name="password" value="${password}"></property>
+	</bean>
+	
+	
+	<!-- 在SpringIoc容器中 创建MyBatis的核心类 SqlSesionFactory -->
+	<bean class="org.mybatis.spring.SqlSessionFactoryBean" id="sqlSessionFacotry">
+		<property name="dataSource" ref="dataSource"/>
+		<!-- 加载mybatis配置文件 <property name="configLocation" value="classpath:conf.xml"></property> -->
+		<!-- 加载mapper.xml路径 -->
+		<property name="mapperLocations" value="classpath:org/test/mapper/*.xml"/>
+		<property name="typeAliasesPackage" value="org.test.entity"></property>
+	</bean>
+	
+	
+	<!-- Spring整合MyBatis -->
+	<!-- 第三种方式生成mapper对象(批量产生多个mapper) 批量产生Mapper对在SpringIOC中的 id值 默认就是 首字母小写接口名 (首字母小写的接口名=id值) -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer" >
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFacotry"/>
+		<!--指定批量产生 哪个包中的mapper对象 -->
+		<property name="basePackage" value="org.test.mapper" />
+	</bean>
+	
+</beans>
